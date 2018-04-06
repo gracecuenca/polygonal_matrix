@@ -59,6 +59,7 @@ int isFront( double x0, double y0, double z0,
                return Ax * By - Ay * Bx;
 }
 //dot product = z
+
 void draw_polygons( struct matrix *polygons, screen s, color c ) {
   if ( polygons->lastcol < 3 ) {
     printf("Need at least 3 points to draw a polygon!\n");
@@ -86,7 +87,6 @@ void draw_polygons( struct matrix *polygons, screen s, color c ) {
       draw_line(x1,y1,x2,y2,s,c);
     }
   }
-
 
 }
 
@@ -118,23 +118,31 @@ void add_box( struct matrix * edges,
   z1 = z-depth;
 
   //front
-  add_edge(edges, x0, y0, z0, x1, y0, z0);
-  add_edge(edges, x1, y0, z0, x1, y1, z0);
-  add_edge(edges, x1, y1, z0, x0, y1, z0);
-  add_edge(edges, x0, y1, z0, x0, y0, z0);
+  add_polygon(edges, x0, y0, z0, x0, y1, z0, x1, y1, z0);
+  add_polygon(edges, x0, y0, z0, x1, y1, z0, x1, y0, z0);
+
+  //RECHECK BACK: YOU SET TO CLOCKWISE ORIENTATION FOR OPPOSITE BUT MIGHT BE OTHER WAY AROUND
 
   //back
-  add_edge(edges, x0, y0, z1, x1, y0, z1);
-  add_edge(edges, x1, y0, z1, x1, y1, z1);
-  add_edge(edges, x1, y1, z1, x0, y1, z1);
-  add_edge(edges, x0, y1, z1, x0, y0, z1);
+  add_polygon(edges, x1, y1, z1, x0, y1, z1, x0, y0, z1);
+  add_polygon(edges, x1, y1, z1, x0, y0, z1, x1, y0, z1);
 
-  //sides
-  add_edge(edges, x0, y0, z0, x0, y0, z1);
-  add_edge(edges, x1, y0, z0, x1, y0, z1);
-  add_edge(edges, x1, y1, z0, x1, y1, z1);
-  add_edge(edges, x0, y1, z0, x0, y1, z1);
+  //right side
+  add_polygon(edges, x1, y1, z0, x1, y0, z1, x1, y0, z0);
+  add_polygon(edges, x1, y1, z0, x1, y1, z1, x1, y0, z1);
 
+  //left side
+  add_polygon(edges, x0, y0, z0, x0, y0, z1, x10, y1, z1);
+  add_polygon(edges, x0, y1, z0, x0, y0, z1, x0, y1, z1);
+
+  //top
+  add_polygon(edges, x0, y0, z0, x1, y0, z0, x0, y0, z1);
+  add_polygon(edges, x1, y0, z0, x1, y0, z1, x0, y0, z1);
+
+  //bottom
+  add_polygon(edges, x1, y1, z0, x0, y1, z0, x1, y1, z1);
+  add_polygon(edges, x1, y1, z1, x0, y1, z0, x0, y1, z1);
+  
 }
 
 
@@ -457,13 +465,6 @@ void draw_lines( struct matrix * points, screen s, color c) {
                points->m[1][point+1],
                s, c);
 }// end draw_lines
-
-
-
-
-
-
-
 
 
 void draw_line(int x0, int y0, int x1, int y1, screen s, color c) {
