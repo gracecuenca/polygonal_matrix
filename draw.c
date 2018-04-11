@@ -51,12 +51,12 @@ int isFront( double x0, double y0, double z0,
              double x1, double y1, double z1,
              double x2, double y2, double z2){
                //only need z val!
-               double Ax = x0 - x1;
-               double Ay = y0 - y1;
-               double Bx = x2 - x1;
-               double By = y2 - y1;
-
-               return Ax * By - Ay * Bx;
+               double Ax = x1 - x0;
+               double Ay = y1 - y0;
+               double Bx = x2 - x0;
+               double By = y2 - y0;
+               //cross
+               return ((Ax * By - Ay * Bx) > 0);
 }
 //dot product = z
 
@@ -75,15 +75,15 @@ void draw_polygons( struct matrix *polygons, screen s, color c ) {
 
     double y0 = polygons->m[1][point];
     double y1 = polygons->m[1][point+1];
-    double y2 = polygons->m[2][point+2];
+    double y2 = polygons->m[1][point+2];
 
     double z0 = polygons->m[2][point];
     double z1 = polygons->m[2][point+1];
     double z2 = polygons->m[2][point+2];
 
-    if(isFront(x0,y0,z0,x1,y1,z1,x2,y2,z2) > 0){
+    if(isFront(x0,y0,z0,x1,y1,z1,x2,y2,z2)){
       draw_line(x0,y0,x1,y1,s,c);
-      draw_line(x0,y0,x2,y1,s,c);
+      draw_line(x0,y0,x2,y2,s,c);
       draw_line(x1,y1,x2,y2,s,c);
     }
   }
@@ -118,31 +118,29 @@ void add_box( struct matrix * edges,
   z1 = z-depth;
 
   //front
-  add_polygon(edges, x0, y0, z0, x0, y1, z0, x1, y1, z0);
   add_polygon(edges, x0, y0, z0, x1, y1, z0, x1, y0, z0);
-
-  //RECHECK BACK: YOU SET TO CLOCKWISE ORIENTATION FOR OPPOSITE BUT MIGHT BE OTHER WAY AROUND
+  add_polygon(edges, x0, y0, z0, x0, y1, z0, x1, y1, z0);
 
   //back
-  add_polygon(edges, x1, y1, z1, x0, y1, z1, x0, y0, z1);
-  add_polygon(edges, x1, y1, z1, x0, y0, z1, x1, y0, z1);
+  add_polygon(edges, x0, y0, z1, x0, y0, z1, x0, y1, z1);
+  add_polygon(edges, x1, y0, z1, x1, y1, z1, x0, y0, z1);
 
   //right side
-  add_polygon(edges, x1, y1, z0, x1, y0, z1, x1, y0, z0);
-  add_polygon(edges, x1, y1, z0, x1, y1, z1, x1, y0, z1);
+  add_polygon(edges, x1, y0, z1, x1, y0, z0, x1, y1, z1);
+  add_polygon(edges, x1, y0, z0, x1, y1, z0, x1, y1, z1);
 
   //left side
-  add_polygon(edges, x0, y0, z0, x0, y0, z1, x10, y1, z1);
-  add_polygon(edges, x0, y1, z0, x0, y0, z1, x0, y1, z1);
+  add_polygon(edges, x0, y0, z0, x0, y0, z1, x0, y1, z0);
+  add_polygon(edges, x0, y0, z1, x0, y1, z1, x0, y1, z0);
 
   //top
-  add_polygon(edges, x0, y0, z0, x1, y0, z0, x0, y0, z1);
   add_polygon(edges, x1, y0, z0, x1, y0, z1, x0, y0, z1);
+  add_polygon(edges, x0, y0, z1, x0, y0, z0, x1, y0, z0);
 
   //bottom
-  add_polygon(edges, x1, y1, z0, x0, y1, z0, x1, y1, z1);
-  add_polygon(edges, x1, y1, z1, x0, y1, z0, x0, y1, z1);
-  
+  add_polygon(edges, x0, y1, z0, x1, y1, z1, x1, y1, z0);
+  add_polygon(edges, x0, y1, z0, x0, y1, z1, x1, y1, z1);
+
 }
 
 
