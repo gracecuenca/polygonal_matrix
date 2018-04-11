@@ -1,0 +1,20 @@
+clear
+sphere
+0 0 0 200
+ident
+move
+300 200 100
+apply
+torus
+0 0 0 20 50
+ident
+rotate
+y 100
+rotate
+x -50
+move
+200 400 300
+apply
+display
+save
+img.png
